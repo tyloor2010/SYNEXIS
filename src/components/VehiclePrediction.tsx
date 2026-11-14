@@ -1,0 +1,9 @@
+import { useState } from 'react';
+import { radioFields,parseRadioInputs,predictCommunication } from '@/lib/vehicle-prediction';
+import type { LunarResult } from '@/lib/lunar-data';
+import type { TerrainHorizon } from '@/lib/lunar-terrain';
+export function VehiclePrediction({result,horizon}:{result:LunarResult;horizon:TerrainHorizon|null}) {
+ const [name,setName]=useState(''),[values,setValues]=useState<Record<string,string>>({});
+ const prediction=predictCommunication(result,horizon,parseRadioInputs(values));
+ return <details className="mt-5 border-y border-border py-4"><summary className="cursor-pointer font-soft font-bold">Vehicle communication prediction</summary><label className="lunar-label mt-4">Vehicle / mission profile<input className="lunar-input" aria-label="Vehicle profile name" value={name} onChange={e=>setName(e.target.value)} maxLength={100}/></label><div className="mt-4 grid gap-3 sm:grid-cols-2">{radioFields.map(([key,label])=><label className="lunar-label" key={key}>{label}<input aria-label={label} type="number" step="any" className="lunar-input" value={values[key]??''} onChange={e=>setValues(v=>({...v,[key]:e.target.value}))}/></label>)}</div><p className="mt-4 text-sm" role="status">{prediction ? `${name || 'User-specified profile'}: ${prediction.usableSamples} / ${prediction.totalSamples} hourly samples with line of sight and nonnegative modeled link margin` : 'Needs all six radio inputs and complete terrain coverage'}</p><p className="mt-3 text-xs text-muted-foreground">Friis: received dBm = 10 log₁₀(transmit W × 1000) + antenna gains − 20 log₁₀(4π range / wavelength) − losses. Link margin = received power − supplied receiver threshold. Source samples, not continuous connectivity or measured signal. Power and battery assumptions above remain user supplied.</p></details>;
+}

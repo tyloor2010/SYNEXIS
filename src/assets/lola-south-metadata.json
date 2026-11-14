@@ -1,0 +1,22 @@
+{
+  "source": "NASA LRO / LOLA PDS",
+  "product": "LDEM_85S_40M V2.0",
+  "sourceImage": "https://imbrium.mit.edu/DATA/LOLA_GDR/POLAR/IMG/LDEM_85S_40M.IMG",
+  "sourceLabel": "https://imbrium.mit.edu/DATA/LOLA_GDR/POLAR/IMG/LDEM_85S_40M.LBL",
+  "projectionCatalog": "https://imbrium.mit.edu/CATALOG/DSMAP_POLAR.CAT",
+  "sourceSha256": "1609e9b860748e0b9952a7239c51b37d3b2a799d35e9fc3c258526711cc1e51d",
+  "tileSha256": "728af9e281be74cde74cb6a91d92e44b7f634e0de37448e7d1d57552b8664b3e",
+  "width": 2048,
+  "height": 2048,
+  "spacingM": 40,
+  "scaleM": 0.5,
+  "radiusM": 1737400,
+  "sourceCropStart": 2768,
+  "sourceWidth": 7584,
+  "centerPixel": 1023.5,
+  "projection": "south polar stereographic, east-positive longitude",
+  "datum": "ME / polar axis DE421; spherical radius 1737400 m",
+  "sampleType": "little-endian signed 16-bit",
+  "sourceDate": "2017-06-15",
+  "note": "Exact center crop, no resampling. Source grid interpolated by LOLA team; no missing-data sentinel declared in label. 40 m grid spacing is not 40 m accuracy. Projection orientation follows catalog forward X/Y equations; inverse longitude atan2(X,Y) and negative southern line Y."
+}

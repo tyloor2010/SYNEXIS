@@ -1,0 +1,29 @@
+{
+  "enabled": false,
+  "activeProvider": "gemini",
+  "maxOutputTokens": 350,
+  "providers": {
+    "nvidia": {
+      "protocol": "openai-compatible",
+      "baseURL": "https://integrate.api.nvidia.com/v1",
+      "model": "",
+      "apiKeySecret": "NVIDIA_API_KEY",
+      "verifiedProtocol": true
+    },
+    "gemini": {
+      "protocol": "google",
+      "baseURL": "https://generativelanguage.googleapis.com/v1beta",
+      "model": "",
+      "apiKeySecret": "GOOGLE_GENERATIVE_AI_API_KEY",
+      "verifiedProtocol": true
+    },
+    "corex": {
+      "protocol": "openai-compatible",
+      "baseURL": "",
+      "allowedHost": "",
+      "model": "",
+      "apiKeySecret": "COREX_API_KEY",
+      "verifiedProtocol": false
+    }
+  }
+}

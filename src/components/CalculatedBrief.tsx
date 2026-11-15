@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { useServerFn } from '@tanstack/react-start';
 import { SendHorizonal, Bot, ShieldCheck, Sparkles } from 'lucide-react';
 import { askSeleneNvidia, type SeleneNvidiaAnswer } from '@/lib/selene-ai.functions';
 import type { LunarResult } from '@/lib/lunar-data';
 import { executeSeleneTool, type SeleneContext } from '@/lib/selene-tools';
 import type { visibilityIntervals } from '@/lib/lunar-windows';
-import type { TerrainGrid, TerrainHorizon } from '@/lib/lunar-terrain';
+import { terrainElevation, type TerrainGrid, type TerrainHorizon } from '@/lib/lunar-terrain';
 
 type SeleneToolCall = { id: string; name: string; arguments: string };
 
@@ -51,6 +51,19 @@ export function CalculatedBrief({
   calculating?: boolean;
 }) {
   const context: SeleneContext = { result, horizon, grid, specifications: null };
+  // A null horizon is only provisional while the covered tile is still being
+  // computed. Outside tile coverage the spherical horizon is the final state
+  // the deterministic brief already reports, so the AI may run with it.
+  const covered = useMemo(
+    () =>
+      grid
+        ? terrainElevation(grid, {
+            latitude: result.scenario.latitude,
+            longitude: result.scenario.longitude,
+          }) !== null
+        : false,
+    [grid, result.scenario.latitude, result.scenario.longitude],
+  );
   const sun = executeSeleneTool('illumination_windows', {}, context).value as ReturnType<
     typeof visibilityIntervals
   >;
@@ -122,7 +135,7 @@ export function CalculatedBrief({
   const attemptedKey = useRef<string | null>(null);
   useEffect(() => {
     if (!analysisKey) return;
-    if (calculating || (grid && horizon === null)) return; // wait for the horizon
+    if (calculating || (covered && horizon === null)) return; // wait for the local horizon
     if (attemptedKey.current === analysisKey) return;
     attemptedKey.current = analysisKey;
     let cancelled = false;
@@ -162,7 +175,7 @@ export function CalculatedBrief({
     if (!trimmed || loading) return;
     // Refuse to answer while the terrain horizon is still being computed —
     // the spherical fallback would be silently mistaken for the local one.
-    if (calculating || (grid && !horizon)) {
+    if (calculating || (covered && !horizon)) {
       setAnswer(null);
       setNotice('أفق التضاريس ما زال قيد الحساب — انتظر اكتماله ثم اسأل مرة أخرى.');
       return;

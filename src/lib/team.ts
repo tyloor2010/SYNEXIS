@@ -30,7 +30,7 @@ export const TEAM_MEMBERS: TeamMember[] = [
     github: 'http://github.com/moiegy',
     linkedin: '',
     website: '',
-    image: 'src/assets/Team/Mohammed_Al-Sayyad.jpeg',
+    image: '/team/Mohammed_Al-Sayyad.jpeg',
   },
   {
     id: 'samar-moharam',
@@ -40,7 +40,7 @@ export const TEAM_MEMBERS: TeamMember[] = [
     github: '',
     linkedin: '',
     website: 'https://www.facebook.com/share/1FYY2P2As4/',
-    image: 'src/assets/Team/Samar.jpeg',
+    image: '/team/Samar.jpeg',
   },
   {
     id: 'ahmed-ibrahimd',
@@ -59,8 +59,8 @@ export const TEAM_MEMBERS: TeamMember[] = [
     roleAr: 'Researcher',
     github: '',
     linkedin: '',
-    website: '',
-    image: 'src/assets/Team/ENG_Ahmed.jpeg',
+    website: 'https://www.facebook.com/share/1FVehnsNKF/',
+    image: '/team/ENG_Ahmed.jpeg',
   },
   {
     id: 'mohammed-nasser',

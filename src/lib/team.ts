@@ -49,7 +49,7 @@ export const TEAM_MEMBERS: TeamMember[] = [
     roleAr: 'Video Editing',
     github: '',
     linkedin: '',
-    website: '',
+    website: 'https://www.facebook.com/share/19oUNBa9BT/',
     image: '/team/ahmed-ibrahimd.jpeg',
   },
   {

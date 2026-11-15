@@ -1,34 +1,32 @@
-import { useMemo, useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { Download, FileText, Trash2, Moon, Plus, Printer } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { PlanningPage } from "./PlanningPage";
-import { usePlanning } from "./PlanningProvider";
-import { useLunarTerrain } from "@/hooks/use-lunar-terrain";
-import { useSiteHorizon } from "./TerrainPanel";
+import { useMemo, useState } from 'react';
+import { Link } from '@tanstack/react-router';
+import { Download, FileText, Trash2, Moon, Plus, Printer } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { PlanningPage } from './PlanningPage';
+import { usePlanning } from './PlanningProvider';
+import { useLunarTerrain } from '@/hooks/use-lunar-terrain';
+import { useSiteHorizon } from './TerrainPanel';
 import {
   powerFields,
   parsePowerInputs,
   powerBudget,
   sizeMission,
   visibilityWindow,
-} from "@/lib/lunar-planning";
-import { downloadReport, planningReport, readableReport, csvReport } from "@/lib/planning-report";
-import type { LunarResult } from "@/lib/lunar-data";
-import type { TerrainGrid } from "@/lib/lunar-terrain";
+} from '@/lib/lunar-planning';
+import { downloadReport, planningReport, readableReport, csvReport } from '@/lib/planning-report';
+import type { LunarResult } from '@/lib/lunar-data';
 import { VehiclePrediction } from './VehiclePrediction';
 
 function Scenario({
   result,
-  grid,
   inputs,
   onRemove,
 }: {
   result: LunarResult;
-  grid: TerrainGrid | null;
   inputs: Record<string, string>;
   onRemove: () => void;
 }) {
+  const { grid, error: terrainError, loading: terrainLoading } = useLunarTerrain(result.scenario);
   const { horizon, calculating } = useSiteHorizon(
     grid,
     result.scenario.latitude,
@@ -46,11 +44,11 @@ function Scenario({
     const valid = parsePowerInputs(inputs);
     return valid ? sizeMission(result, horizon, valid) : null;
   }, [inputs, result, horizon]);
-  const [printError, setPrintError] = useState("");
+  const [printError, setPrintError] = useState('');
   const print = () => {
-    const page = window.open("", "_blank");
+    const page = window.open('', '_blank');
     if (!page) {
-      setPrintError("Allow the report window, or download Report and print it from your browser.");
+      setPrintError('اسمح بنافذة التقرير، أو نزّل التقرير واطبعه من متصفحك.');
       return;
     }
     page.opener = null;
@@ -58,7 +56,7 @@ function Scenario({
     page.document.close();
     page.focus();
     page.print();
-    setPrintError("");
+    setPrintError('');
   };
   const report = () => planningReport(result, horizon, specs);
   return (
@@ -69,8 +67,8 @@ function Scenario({
         <Button
           size="icon"
           variant="ghost"
-          aria-label={`Remove ${result.scenario.name}`}
-          title="Remove scenario"
+          aria-label={`احذف ${result.scenario.name}`}
+          title="احذف السيناريو"
           onClick={onRemove}
         >
           <Trash2 />
@@ -81,62 +79,69 @@ function Scenario({
         <br />
         {result.scenario.latitude.toFixed(4)}°N, {result.scenario.longitude.toFixed(4)}°E
         <br />
-        {result.sun.length - 1} h mission
+        مهمة {result.sun.length - 1} ساعة
       </p>
       <p role="status" className="mt-4 text-xs font-bold">
-        {calculating
-          ? "Calculating terrain…"
-          : horizon
-            ? "15 km LOLA horizon"
-            : "Terrain unavailable · spherical only"}
+        {terrainLoading
+          ? 'جارٍ تحميل تضاريس LOLA…'
+          : terrainError
+            ? 'تضاريس LOLA غير متاحة'
+            : calculating
+              ? 'جارٍ حساب التضاريس…'
+              : horizon
+                ? 'أفق LOLA 15 كم'
+                : 'لا توجد بلاطة LOLA تغطي هذه النقطة · أفق كروي فقط'}
       </p>
       <dl className="mt-5 grid gap-4">
         {[
-          ["Sunlight duration", `${sun.hours.toFixed(1)} h`],
-          ["Earth-visible duration", `${earth.hours.toFixed(1)} h`],
+          ['مدة الإضاءة', `${sun.hours.toFixed(1)} ساعة`],
+          ['مدة ظهور الأرض', `${earth.hours.toFixed(1)} ساعة`],
           [
-            "Next sunset from landing",
+            'الغروب القادم من الهبوط',
             sun.nextSetting
-              ? `${sun.nextSetting.earliestHours}–${sun.nextSetting.latestHours} h`
+              ? `${sun.nextSetting.earliestHours}–${sun.nextSetting.latestHours} ساعة`
               : sun.currentlyVisible
-                ? "No crossing in window"
-                : "Below horizon at landing",
+                ? 'لا يوجد عبور في النافذة'
+                : 'تحت الأفق عند الهبوط',
           ],
           [
-            "Next Earth interruption",
+            'الانقطاع القادم للأرض',
             earth.nextSetting
               ? `${earth.nextSetting.earliestHours}–${earth.nextSetting.latestHours} h`
               : earth.currentlyVisible
-                ? "No crossing in window"
-                : "Below horizon at landing",
+                ? 'لا يوجد عبور في النافذة'
+                : 'تحت الأفق عند الهبوط',
           ],
-          ["Energy demand", budget ? `${budget.demandWh.toFixed(1)} Wh` : "Needs mission inputs"],
-          ["Modeled generation", budget ? `${budget.generatedWh.toFixed(1)} Wh` : "—"],
           [
-            "Required battery, array fixed",
+            'الطلب الطاقي',
+            budget ? `${budget.demandWh.toFixed(1)} واط.ساعة` : 'يحتاج مدخلات المهمة',
+          ],
+          ['التوليد المُنمذج', budget ? `${budget.generatedWh.toFixed(1)} واط.ساعة` : '—'],
+          [
+            'البطارية المطلوبة (اللوح ثابت)',
             !specs || !horizon
-              ? "Needs mission inputs and terrain"
-              : sizing?.requiredBatteryWh !== null && sizing?.requiredBatteryWh !== undefined
-                ? `${sizing.requiredBatteryWh.toFixed(0)} Wh`
-                : "No bounded solution",
+              ? 'يحتاج مدخلات المهمة والتضاريس'
+              : sizing?.requiredBatteryWh != null
+                ? `${sizing.requiredBatteryWh.toFixed(0)} واط.ساعة`
+                : 'لا يوجد حل محدود',
           ],
           [
-            "Required array, battery fixed",
+            'اللوح المطلوب (البطارية ثابتة)',
             !specs || !horizon
-              ? "Needs mission inputs and terrain"
-              : sizing?.requiredArrayM2 !== null && sizing?.requiredArrayM2 !== undefined
-                ? `${sizing.requiredArrayM2.toFixed(2)} m²`
-                : "No bounded solution",
+              ? 'يحتاج مدخلات المهمة والتضاريس'
+              : sizing?.requiredArrayM2 != null
+                ? `${sizing.requiredArrayM2.toFixed(2)} م²`
+                : 'لا يوجد حل محدود',
           ],
           [
-            "Minimum battery charge",
+            'أدنى شحنة للبطارية',
             budget && specs
               ? `${((budget.minChargeWh / specs.capacityWh) * 100).toFixed(1)}%`
-              : "—",
+              : '—',
           ],
           [
-            "Energy shortfall at reserve",
-            budget ? `${budget.deficitWh.toFixed(1)} Wh · battery-side` : "—",
+            'نقص الطاقة عند الحد الاحتياطي',
+            budget ? `${budget.deficitWh.toFixed(1)} واط.ساعة · جانب البطارية` : '—',
           ],
         ].map(([label, value]) => (
           <div key={label}>
@@ -146,18 +151,18 @@ function Scenario({
         ))}
       </dl>
       <p className="mt-5 border-t border-border pt-4 text-sm font-bold">
-        Power screening: {budget?.status ?? "insufficient data"}
+        فحص الطاقة: {budget?.status ?? 'بيانات غير كافية'}
       </p>
       <p className="mt-3 text-[10px] leading-relaxed text-muted-foreground">
         {!specs
-          ? "All twelve mission inputs are required."
+          ? 'المدخلات الاثنا عشر للمهمة مطلوبة.'
           : !horizon
-            ? "Complete terrain coverage is required for screening."
+            ? 'يلزم توفر تغطية التضاريس كاملة للفحص.'
             : budget && budget.deficitWh > 0
-              ? "Modeled demand exceeds generation plus usable stored energy during this window."
-              : "Battery remains at or above the requested reserve in this model."}{" "}
-        Sizing varies one input at a time, holding all others fixed. Communications visibility is
-        reported separately; no mission-safety verdict.
+              ? 'الطلب المُنمذج يتجاوز التوليد زائد الطاقة المخزنة القابلة للاستخدام خلال هذه النافذة.'
+              : 'تبقى البطارية عند أو فوق الحد الاحتياطي المطلوب في هذا النموذج.'}{' '}
+        يتغير التحجيم بمقدار مدخل واحد في كل مرة مع تثبيت الباقي. يُبلَّغ عن ظهور الاتصال بشكل
+        منفصل؛ لا يوجد حكم على سلامة المهمة.
       </p>
       <div className="mt-5 flex flex-wrap gap-2">
         <Button
@@ -165,11 +170,11 @@ function Scenario({
           variant="outline"
           disabled={calculating}
           onClick={() =>
-            downloadReport("SYNEXIS-scenario-report.html", readableReport(report()), "text/html")
+            downloadReport('SYNEXIS-scenario-report.html', readableReport(report()), 'text/html')
           }
         >
           <FileText />
-          Report
+          التقرير
         </Button>
         <Button
           size="sm"
@@ -177,21 +182,21 @@ function Scenario({
           disabled={calculating}
           onClick={() =>
             downloadReport(
-              "SYNEXIS-scenario-data.json",
+              'SYNEXIS-scenario-data.json',
               JSON.stringify(report(), null, 2),
-              "application/json",
+              'application/json',
             )
           }
         >
           <Download />
-          Data
+          البيانات
         </Button>
         <Button
           size="sm"
           variant="outline"
           disabled={calculating}
           onClick={() =>
-            downloadReport("SYNEXIS-scenario-samples.csv", csvReport(report()), "text/csv")
+            downloadReport('SYNEXIS-scenario-samples.csv', csvReport(report()), 'text/csv')
           }
         >
           <Download />
@@ -212,13 +217,12 @@ function Scenario({
 }
 export function MissionCompare() {
   const { saved, current, save, remove } = usePlanning();
-  const { grid, error } = useLunarTerrain(saved.some(s => s.scenario.latitude < -85 && s.scenario.latitude > -88.5));
   const [inputs, setInputs] = useState<Record<string, string>>({});
   return (
-    <PlanningPage title="Compare the mission." eyebrow="03 / Scenarios & requirements">
+    <PlanningPage title="قارن المهمة." eyebrow="03 / السيناريوهات والمتطلبات">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <p className="text-xs text-muted-foreground">
-          {saved.length} / 4 scenarios · saved on this browser only
+          {saved.length} / 4 سيناريوهات · تُحفظ على هذا المتصفح فقط
         </p>
         <div className="flex flex-wrap gap-2">
           <Button
@@ -229,19 +233,19 @@ export function MissionCompare() {
             }}
           >
             <Plus />
-            Add current scenario
+            أضف السيناريو الحالي
           </Button>
           <Button asChild>
             <Link to="/explorer">
               <Moon />
-              Navigator
+              الملاح
             </Link>
           </Button>
         </div>
       </div>
       <details open className="mt-7 border-y border-border py-5">
         <summary className="cursor-pointer font-soft text-xl font-bold">
-          Power & battery requirements
+          متطلبات الطاقة والبطارية
         </summary>
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {powerFields.map(([key, label]) => (
@@ -251,7 +255,7 @@ export function MissionCompare() {
                 aria-label={label}
                 type="number"
                 step="any"
-                value={inputs[key] ?? ""}
+                value={inputs[key] ?? ''}
                 onChange={(event) => setInputs((v) => ({ ...v, [key]: event.target.value }))}
                 className="lunar-input"
               />
@@ -260,28 +264,21 @@ export function MissionCompare() {
         </div>
         <p className="mt-4 text-xs text-muted-foreground">
           {parsePowerInputs(inputs)
-            ? "Mission inputs valid. Applied equally to every scenario."
-            : "Enter all mission specifications with valid units and percentages. No equipment assumptions are supplied."}
+            ? 'مدخلات المهمة صحيحة. تُطبق بالتساوي على كل سيناريو.'
+            : 'أدخل كل مواصفات المهمة بوحدات ونسب صحيحة. لا تُزوَّد أي افتراضات عن المعدات.'}
         </p>
         <p className="mt-3 text-[10px] leading-relaxed text-muted-foreground">
-          Constant load and fixed panel orientation; array output from supplied irradiance × area ×
-          efficiency × incidence, with supplied losses. Hourly JPL positions, minute integration of
-          interpolated power. No thermal, degradation, maximum charging rate or power-electronics
-          model.
+          حمل ثابت واتجاه لوح ثابت؛ ناتج اللوح من الإشعاع المورد × المساحة × الكفاءة × السقوط، مع
+          الفقدان المورد. مواضع JPL كل ساعة، وتكامل بالدقيقة للقدرة المستوفاة. لا يوجد نموذج حراري
+          أو للتدهور أو للحد الأقصى للشحن أو لإلكترونيات القدرة.
         </p>
       </details>
-      {error && (
-        <p role="alert" className="mt-4 text-xs">
-          {error}
-        </p>
-      )}
       {saved.length ? (
         <div className="mt-7 grid items-start gap-4 md:grid-cols-2 xl:grid-cols-4">
           {saved.map((result, index) => (
             <Scenario
               key={`${result.scenario.date}-${index}`}
               result={result}
-              grid={grid}
               inputs={inputs}
               onRemove={() => remove(index)}
             />
@@ -289,15 +286,15 @@ export function MissionCompare() {
         </div>
       ) : (
         <div className="border-b border-border py-12">
-          <h2 className="font-soft text-2xl font-bold">No scenarios saved.</h2>
+          <h2 className="font-soft text-2xl font-bold">لا توجد سيناريوهات محفوظة.</h2>
           <p className="mt-3 text-sm text-muted-foreground">
-            Evaluate a location and date in Navigator, then add its retrieved results.
+            قيّم موقعًا وتاريخًا في الملاح، ثم أضف نتائجه المسترجعة.
           </p>
         </div>
       )}
       <p className="mt-6 text-[10px] text-muted-foreground">
-        Report includes mission inputs, source hashes, retrieval time, interval estimates and
-        limitations. Open the downloaded report and use your browser’s print dialog to save a PDF.
+        يتضمن التقرير مدخلات المهمة وبصمات المصدر ووقت الاسترجاع وتقديرات الفترات والقيود. افتح
+        التقرير المُنزّل واستخدم خاصية الطباعة في متصفحك للحفظ كملف PDF.
       </p>
     </PlanningPage>
   );

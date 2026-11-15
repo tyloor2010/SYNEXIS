@@ -1,26 +1,32 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { SynexisHome } from "@/components/SynexisHome";
+import { createFileRoute } from '@tanstack/react-router';
+import { SynexisHome } from '@/components/SynexisHome';
+import { canonicalLink } from '@/lib/seo-meta';
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute('/')({
   staticData: { sitemap: true },
   head: () => ({
     meta: [
-      { title: "SYNEXIS — Lunar Landing Site Navigator" },
+      { title: 'SYNEXIS — ملاح مواقع الهبوط على القمر' },
       {
-        name: "description",
+        name: 'description',
         content:
-          "SYNEXIS compares lunar landing sites and dates using real JPL Horizons data to assess sunlight and Earth's visibility above the horizon.",
+          'SYNEXIS يقارن بين مواقع الهبوط على القمر والتواريخ باستخدام بيانات NASA/JPL Horizons الحقيقية لتقييم الإضاءة ومدى ظهور الأرض فوق الأفق.',
       },
-      { property: "og:title", content: "SYNEXIS — Lunar Landing Site Navigator" },
+      { property: 'og:title', content: 'SYNEXIS — ملاح مواقع الهبوط على القمر' },
       {
-        property: "og:description",
+        property: 'og:description',
         content:
-          "SYNEXIS compares lunar landing sites and dates using real JPL Horizons data to assess sunlight and Earth's visibility above the horizon.",
+          'SYNEXIS يقارن بين مواقع الهبوط على القمر والتواريخ باستخدام بيانات NASA/JPL Horizons الحقيقية لتقييم الإضاءة ومدى ظهور الأرض فوق الأفق.',
       },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:description", content: "SYNEXIS compares lunar landing sites and dates using real JPL Horizons data to assess sunlight and Earth's visibility above the horizon." },
+      { property: 'og:type', content: 'website' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      {
+        name: 'twitter:description',
+        content:
+          'SYNEXIS يقارن بين مواقع الهبوط على القمر والتواريخ باستخدام بيانات NASA/JPL Horizons الحقيقية لتقييم الإضاءة ومدى ظهور الأرض فوق الأفق.',
+      },
     ],
+    links: [canonicalLink('/')],
   }),
   component: SynexisHome,
 });

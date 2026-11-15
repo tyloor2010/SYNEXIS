@@ -14,9 +14,11 @@ import { Route as CompareRouteImport } from './routes/compare'
 import { Route as ExplorerRouteImport } from './routes/explorer'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as MeasureRouteImport } from './routes/measure'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SeoRouteImport } from './routes/seo'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SitesRouteImport } from './routes/sites'
+import { Route as TeamRouteImport } from './routes/team'
 import { Route as SitesIndexRouteImport } from './routes/sites.index'
 import { Route as SitesSiteIdRouteImport } from './routes/sites.$siteId'
 
@@ -45,6 +47,11 @@ const MeasureRoute = MeasureRouteImport.update({
   path: '/measure',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SeoRoute = SeoRouteImport.update({
   id: '/seo',
   path: '/seo',
@@ -58,6 +65,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const SitesRoute = SitesRouteImport.update({
   id: '/sites',
   path: '/sites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeamRoute = TeamRouteImport.update({
+  id: '/team',
+  path: '/team',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitesIndexRoute = SitesIndexRouteImport.update({
@@ -77,9 +89,11 @@ export interface FileRoutesByFullPath {
   '/explorer': typeof ExplorerRoute
   '/learn': typeof LearnRoute
   '/measure': typeof MeasureRoute
+  '/privacy': typeof PrivacyRoute
   '/seo': typeof SeoRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sites': typeof SitesRouteWithChildren
+  '/team': typeof TeamRoute
   '/sites/$siteId': typeof SitesSiteIdRoute
   '/sites/': typeof SitesIndexRoute
 }
@@ -89,8 +103,10 @@ export interface FileRoutesByTo {
   '/explorer': typeof ExplorerRoute
   '/learn': typeof LearnRoute
   '/measure': typeof MeasureRoute
+  '/privacy': typeof PrivacyRoute
   '/seo': typeof SeoRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/team': typeof TeamRoute
   '/sites/$siteId': typeof SitesSiteIdRoute
   '/sites': typeof SitesIndexRoute
 }
@@ -101,9 +117,11 @@ export interface FileRoutesById {
   '/explorer': typeof ExplorerRoute
   '/learn': typeof LearnRoute
   '/measure': typeof MeasureRoute
+  '/privacy': typeof PrivacyRoute
   '/seo': typeof SeoRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sites': typeof SitesRouteWithChildren
+  '/team': typeof TeamRoute
   '/sites/$siteId': typeof SitesSiteIdRoute
   '/sites/': typeof SitesIndexRoute
 }
@@ -115,9 +133,11 @@ export interface FileRouteTypes {
     | '/explorer'
     | '/learn'
     | '/measure'
+    | '/privacy'
     | '/seo'
     | '/sitemap.xml'
     | '/sites'
+    | '/team'
     | '/sites/$siteId'
     | '/sites/'
   fileRoutesByTo: FileRoutesByTo
@@ -127,8 +147,10 @@ export interface FileRouteTypes {
     | '/explorer'
     | '/learn'
     | '/measure'
+    | '/privacy'
     | '/seo'
     | '/sitemap.xml'
+    | '/team'
     | '/sites/$siteId'
     | '/sites'
   id:
@@ -138,9 +160,11 @@ export interface FileRouteTypes {
     | '/explorer'
     | '/learn'
     | '/measure'
+    | '/privacy'
     | '/seo'
     | '/sitemap.xml'
     | '/sites'
+    | '/team'
     | '/sites/$siteId'
     | '/sites/'
   fileRoutesById: FileRoutesById
@@ -151,9 +175,11 @@ export interface RootRouteChildren {
   ExplorerRoute: typeof ExplorerRoute
   LearnRoute: typeof LearnRoute
   MeasureRoute: typeof MeasureRoute
+  PrivacyRoute: typeof PrivacyRoute
   SeoRoute: typeof SeoRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SitesRoute: typeof SitesRouteWithChildren
+  TeamRoute: typeof TeamRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -193,6 +219,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MeasureRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/seo': {
       id: '/seo'
       path: '/seo'
@@ -212,6 +245,13 @@ declare module '@tanstack/react-router' {
       path: '/sites'
       fullPath: '/sites'
       preLoaderRoute: typeof SitesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/team': {
+      id: '/team'
+      path: '/team'
+      fullPath: '/team'
+      preLoaderRoute: typeof TeamRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sites/': {
@@ -249,9 +289,11 @@ const rootRouteChildren: RootRouteChildren = {
   ExplorerRoute: ExplorerRoute,
   LearnRoute: LearnRoute,
   MeasureRoute: MeasureRoute,
+  PrivacyRoute: PrivacyRoute,
   SeoRoute: SeoRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SitesRoute: SitesRouteWithChildren,
+  TeamRoute: TeamRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

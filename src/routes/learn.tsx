@@ -3,23 +3,192 @@ import { useState } from 'react';
 import { BookOpen, Gauge } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PlanningPage } from '@/components/PlanningPage';
+import { canonicalLink } from '@/lib/seo-meta';
 export const Route = createFileRoute('/learn')({
   staticData: { sitemap: true },
-  head: () => ({ meta: [{ title: 'Methodology, Sources & Limits — SYNEXIS' }, { name: 'description', content: 'Learn how SYNEXIS combines JPL Horizons and LOLA terrain for lunar sunlight, Earth visibility and transparent energy screening.' }, { property: 'og:title', content: 'Methodology, Sources & Limits — SYNEXIS' }, { property: 'og:description', content: 'Understand authentic lunar data, calculations, terrain coverage and the boundaries of educational mission screening.' }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary_large_image' }] }),
+  head: () => ({
+    meta: [
+      { title: 'المنهجية والمصادر والحدود — SYNEXIS' },
+      {
+        name: 'description',
+        content:
+          'كيف يجمع SYNEXIS بين بيانات JPL Horizons وتضاريس LOLA لتقييم الإضاءة ومدى ظهور الأرض ومتطلبات الطاقة — مع حدود صريحة.',
+      },
+      { property: 'og:title', content: 'المنهجية والمصادر والحدود — SYNEXIS' },
+      {
+        property: 'og:description',
+        content: 'افهم بيانات القمر الحقيقية والحسابات وتغطية التضاريس وحدود فحص مهام تعليمي.',
+      },
+      { property: 'og:type', content: 'website' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+    ],
+    links: [canonicalLink('/learn')],
+  }),
   component: Learn,
 });
 function Learn() {
   const [technical, setTechnical] = useState(false);
   const sections = [
-    ['Why the south pole?', 'Low Sun angles and rugged terrain can hide the Sun or Earth behind a nearby ridge. A location and date must be considered together.', 'The south-polar geometry makes local horizon relief important. This product is an educational comparison tool for planners, engineers, teachers, students and the public; not a flight-certified operational system.'],
-    ['What is observed?', 'JPL Horizons supplies the Sun and Earth directions and distances for the selected coordinates and time. We never replace unavailable measurements with invented numbers.', 'NASA/JPL Horizons: airless apparent azimuth, elevation and observer range; targets Sun 10 and Earth 399; lunar center 301; east-positive longitude; hourly UTC samples. Up to 168 hours. Observer elevation uses covered LOLA height plus the specified above-ground height; outside coverage, the sphere reference is explicitly used.'],
-    ['What is real terrain?', 'LOLA is a laser altimeter on NASA’s Lunar Reconnaissance Orbiter. Its elevation grid gives the ridges and depressions used here. The loaded terrain is only a small south-polar region.', 'LRO-L-LOLA-4-GDR-V1.0 / LDEM_85S_40M V2.0, created 2017-06-15. Exact central 2048 × 2048 crop from the official 7584 × 7584 PDS image: 81.92 km square, 40 m pole grid spacing, signed little-endian 16-bit values × 0.5 m relative to 1,737,400 m. Source projection is spherical south-polar stereographic, ME/polar-axis DE421. The source is interpolated altimetry; spacing is not accuracy. SHA-256 integrity is checked before use. No missing-data sentinel is declared in the label.'],
-    ['Sunlight and Earth visibility', 'The Sun or Earth is above the sampled terrain horizon when its center is higher than the ridges in that direction. A clear Earth direction is not a guarantee of communication.', 'Horizon uses 1° azimuth bins with interpolation, 80 m radial sampling up to 15 km, spherical curvature and supplied observer height. Any uncovered radial sample withholds the complete horizon. Solar/earth disc extent, eclipses and distant obstructions are excluded. Sunlight duration uses linear crossing interpolation between hourly samples, not a count of positive samples. Crossings are bracketed to source intervals; shorter events may be missed. Rendered shadows are illustrative and do not define numerical visibility.'],
-    ['Energy and battery', 'Supply your equipment and mission requirements. The model compares demand with estimated solar generation and stored energy; missing specifications prevent a complete result.', 'Fixed panel output = supplied irradiance × area × conversion efficiency × orientation incidence × other loss factor. Battery balance uses constant user load, charging/discharging efficiency, supplied capacity, starting charge and reserve. Hourly source powers are linearly interpolated into minute integration steps. No variable load schedule, maximum charging rate, power-electronics, aging, thermal or eclipse model. The energy shortfall is battery-side energy needed to maintain reserve. “Requirements met under this model” applies only to supplied energy requirements, not all mission criteria.'],
-    ['Transparent limits', 'We show what the data can—and cannot—tell you. These results do not certify a safe landing, a working radio link or a real mission.', 'No precision beyond DEM/sample support; no landing hazard certification, operational guarantee, unrestricted AI chat or full thermal simulation. Radio estimates, where supplied, retain explicit equipment assumptions and are modeled rather than measured. Home surface texture is NASA SVS/LROC WAC, not a DEM and not current lighting. Decorative illustrations are not scientific imagery.'],
-    ['Windows, sensitivity & sharing', 'The timeline separates light and darkness. Compare one day later or one kilometer east, then share the selected inputs for a fresh source retrieval.', 'Contiguous visibility intervals use linear zero-crossings between hourly source samples. Longest darkness and Earth interruption refer only to the evaluated window. Sensitivity retrieves a separate JPL scenario and computes each site’s terrain horizon. Shared URLs contain validated inputs, not scientific measurements. The reference button selects an explicitly historical JPL snapshot; the verified terrain is cached after its first successful load, but a fresh offline installation still requires an initial visit.'],
-    ['Measurement & mission sizing', 'Measure source-based profiles, compare them with your own slope threshold, and fit a crater rim from three chosen points. Required battery and array values use your supplied assumptions.', 'Chord = 2 R sin(angular distance/2). Profiles follow sampled great-circle segments; maximum sampled slope is not a sub-grid hazard metric. Three rim points define a local tangent-plane circumcircle, not crater depth. Line-of-sight clearance is sampled in spherical Cartesian geometry. Mission sizing uses bounded bisection, varying battery capacity or array area separately while holding all other specified inputs fixed. An unavailable solution is not a certification of impossibility.'],
-    ['Selene', 'Selene’s calculated brief explains the current results without inventing measurements. No actions are performed on your behalf.', 'The deterministic brief calls the validated read-only tool registry. Unknown/write tools are rejected; batches allow at most four tools. External NVIDIA/Gemini/Corex settings are editable, but paid calls remain disabled until credentials and exact API/model contracts are configured. Provider settings do not turn a prompt into an access-control or budget guarantee.'],
+    [
+      'لماذا القطب الجنوبي؟',
+      'زوايا الشمس المنخفضة والتضاريس الوعرة قد تخفي الشمس أو الأرض خلف تلال قريبة. لذلك يجب النظر إلى الموقع والتاريخ معًا.',
+      'تجعل هندسة القطب الجنوبي إغاثة الأفق المحلي مهمة. هذا الموقع أداة مقارنة تعليمية للمخططين والمهندسين والمدرسين والطلاب والجمهور؛ وليست نظامًا تشغيليًا معتمدًا للرحلات الفضائية.',
+    ],
+    [
+      'ما الذي يُرصَد؟',
+      'تزود JPL Horizons اتجاهات الشمس والأرض والمسافات للإحداثيات والزمن المختارة. ولا نستبدل القياسات غير المتاحة بأرقام مخترعة.',
+      'NASA/JPL Horizons: السمت والارتفاع الظاهري بلا غلاف جوي والمدى للراصد؛ الهدفان الشمس 10 والأرض 399؛ مركز القمر 301؛ خط الطول موجب شرقًا؛ عينات كل ساعة UTC حتى 168 ساعة. ارتفاع الراصد يأخذ ارتفاع LOLA المغطى زائد الارتفاع المحدد فوق السطح؛ خارج التغطية يُستخدم مرجع الكرة بشكل صريح.',
+    ],
+    [
+      'ما هي التضاريس الحقيقية؟',
+      'LOLA مقياس ارتفاع ليزر على متن المركبة القمرية الاستطلاعية التابعة لناسا (LRO). شبكة ارتفاعاته تعطي التلال والمنخفضات المستخدمة هنا. التضاريس المحمَّلة تقتصر على منطقة صغيرة من القطب الجنوبي.',
+      'LRO-L-LOLA-4-GDR-V1.0 / LDEM_85S_40M V2.0، أُنشئت 2017-06-15. مقطع مركزي دقيق 2048 × 2048 بكسل من صورة PDS الرسمية بمقاس 7584 × 7584: مربع 81.92 كم، تباعد 40 م عند القطب، قيم 16-بت إشارة-صغيرة التبادلية × 0.5 م بالنسبة إلى 1,737,400 م. مصدر الإسقاط قطبي جنوبي مجسم كروي ME/polar-axis DE421. المصدر قياس ارتفاعي مُستوفى؛ التباعد ليس دقة. يُفحص تكامل SHA-256 قبل الاستخدام. لا تُعلَّن إشارة بيانات مفقودة في الملصق.',
+    ],
+    [
+      'الإضاءة وظهور الأرض',
+      'الشمس أو الأرض فوق أفق التضاريس المُقيّد بالعينات عندما يكون مركزهما أعلى من التلال في ذلك الاتجاه. خط الرؤية الأرضي الواضح ليس ضمانًا لاتصال يعمل.',
+      'الأفق يستخدم حاويات 1° في الاتجاه مع استيفاء، وفحصًا شعاعيًا كل 80 م حتى 15 كم، وانحناء كرويًا وارتفاع راصد مورد. أي عينة شعاعية غير مغطاة تحجب الأفق كاملًا. قطر الشمس والأرض والكسوف والعوائق البعيدة مستثناة. مدة الإضاءة تستخدم استيفاء تقاطعات خطية بين عينات كل ساعة، وليست عدد العينات الموجبة. تُحدّد المواصلات داخل فواصل المصدر؛ قد تُفوت الأحداث الأقصر. ظلال الرندر توضيحية ولا تحدد الرؤية العددية.',
+    ],
+    [
+      'الطاقة والبطارية',
+      'وفّر معداتك ومتطلبات مهمتك. يقارن النموذج الطلب بالتوليد الشمسي المُقدّر والطاقة المخزنة؛ غياب المواصفات يمنع نتيجة كاملة.',
+      'ناتج اللوح الثابت = الإشعاع المورد × المساحة × كفاءة التحويل × السقوط الهندسي × عامل الفقدان المورد. رصيد البطارية يستخدم حملًا ثابتًا موَّردا وكفاءة شحن/تفريغ، والسعة الابتدائية والشحنة والحد الاحتياطي. تُستوفى القدرة كل ساعة خطيًا إلى خطوات تكامل بالدقيقة. لا يوجد نموذج لحمل متغير أو حد أقصى للشحن أو إلكترونيات القدرة أو التقادم أو الحرارة أو الكسوف. نقص الطاقة هو طاقة جانب البطارية اللازمة للحفاظ على الحد الاحتياطي. “المتطلبات مستوفاة ضمن هذا النموذج” تنطبق فقط على متطلبات الطاقة الموردة، وليست كل معايير المهمة.',
+    ],
+    [
+      'حدود شفافة',
+      'نعرض ما يمكن للبيانات أن تخبرنا به — وما لا يمكنها. هذه النتائج لا تشهد سلامة هبوط ولا وصلة راديو تعمل ولا مهمة حقيقية.',
+      'لا توجد دقة تتجاوز دعم DEM/العينات؛ ولا يوجد تقييم مخاطر هبوط أو ضمان تشغيلي أو دردشة ذكاء اصطناعي غير مقيدة أو محاكاة حرارية كاملة. تقديرات الراديو، حيث تُورَّد، تحتفظ بافتراضات معدات صريحة وهي منمذجة وليست مقاسة. نسيج السطح المنزلي هو NASA SVS/LROC WAC، وليس DEM وليست إضاءة حالية. الرسوم التوضيحية ليست صورًا علمية.',
+    ],
+    [
+      'النوافذ والحساسية والمشاركة',
+      'يفصل الخط الزمني بين الضوء والظلام. قارن يومًا لاحقًا أو كيلومترًا شرقًا، ثم شارك المدخلات المختارة لاسترجاع مصدر حديث.',
+      'فواصل الرؤية المتصلة تستخدم تقاطعات صفرية خطية بين العينات الساعية. أطول ظلام وأطول انقطاع للأرض يشيران فقط إلى النافذة المُقيّمة. تحليل الحساسية يسترجع سيناريو JPL منفصل ويحسب أفق التضاريس لكل موقع. روابط المشاركة تحتوي مدخلات مُتحققًا منها وليست قياسات علمية. زر اللقطة المرجعية يختار لقطة JPL تاريخية صراحة؛ يُخزَّن التضاريس المُتحقق منها بعد أول تحميل ناجح، لكن جهازًا غير متصل حديثًا يحتاج زيارة أولية لازمة.',
+    ],
+    [
+      'القياس والتحجيم',
+      'قِس ملفات شخصية مبنية على المصدر، قارن بينها وبين حد الميل الخاص بك، وطابق حافة فوهة من ثلاث نقاط تختارها. البطارية والمساحة المطلوبان يستخدمان افتراضاتك الموردة.',
+      'الوتر = 2 × R × sin(المسافة الزاوية/2). الملفات تتبع قطاعات قوس دائري أعظم بالعينات؛ ولا يوجد مقياس ميل دون الشبكة. ثلاث نقاط على الحافة تحدد دائرة محيطة في المستوى المماسي المحلي، وليست عمق الفوهة. الخلوص في خط الرؤية يُقيّد بإحداثيات ديكارتية كروية. تحجيم المهمة يستخدم انشقاقًا محدودًا، مع تغيير سعة البطارية أو مساحة اللوح منفصلًا مع تثبيت كل المواصفات الأخرى. الحل غير المتاح ليس شهادة على الاستحالة.',
+    ],
+    [
+      'سيلين',
+      'شرح سيلين المحسوب يوضح النتائج الحالية دون اختراع قياسات. لا تُنفذ أي عمليات نيابة عنك.',
+      'الملخص الحتمي يستدعي سجل الأدوات المقيدة للقراءة فقط. تُرفض الأدوات غير المعروفة/القابلة للكتابة؛ حد أربع أدوات لكل دفعة. سيلين دائمًا تعمل محليًا. عند تفعيل زر الذكاء الاصطناعي اختياريًا فقط، يُرسل نص سؤالك واسم الموقع وتاريخه والساعات المحسوبة إلى NVIDIA (لا إحداثيات ولا مفاتيح) — ويبقى موديل NVIDIA مقيدًا بأدوات الحساب نفسها، ولا يُطلب منه أي رقم غير موجود في مخرجات الأدوات.',
+    ],
   ];
-  return <PlanningPage title="Understand the result." eyebrow="04 / Methodology & sources"><div className="flex gap-2" role="group" aria-label="Explanation detail"><Button variant={!technical ? 'default' : 'outline'} onClick={() => setTechnical(false)}><BookOpen />Educational</Button><Button variant={technical ? 'default' : 'outline'} onClick={() => setTechnical(true)}><Gauge />Technical</Button></div><div className="mt-7 grid gap-x-10 lg:grid-cols-2">{sections.map(([title, simple, detail]) => <section key={title} className="border-t border-border py-7"><h2 className="font-soft text-2xl font-bold">{title}</h2><p className="mt-4 text-sm leading-relaxed text-muted-foreground">{technical ? detail : simple}</p></section>)}</div><section className="border-t border-border py-7"><h2 className="font-soft text-2xl font-bold">Glossary</h2><dl className="mt-5 grid gap-5 sm:grid-cols-2">{[['Azimuth', 'Direction clockwise from local north, 0–360°.'], ['Elevation', 'Angle above or below the local geometric horizon.'], ['DEM', 'Digital elevation model: a grid of surface heights.'], ['Wh', 'Watt-hours: stored or consumed energy, not instantaneous power.'], ['Terrain horizon', 'The highest sampled obstruction angle in each direction.'], ['Screening', 'A model-based comparison, not a mission approval.']].map(([word, definition]) => <div key={word}><dt className="font-bold">{word}</dt><dd className="mt-2 text-xs text-muted-foreground">{definition}</dd></div>)}</dl></section><Button asChild><Link to="/explorer">Open Navigator</Link></Button></PlanningPage>;
+  return (
+    <PlanningPage title="افهم النتيجة." eyebrow="04 / المنهجية والمصادر">
+      <div className="flex gap-2" role="group" aria-label="مستوى الشرح">
+        <Button variant={!technical ? 'default' : 'outline'} onClick={() => setTechnical(false)}>
+          <BookOpen />
+          تعليمي
+        </Button>
+        <Button variant={technical ? 'default' : 'outline'} onClick={() => setTechnical(true)}>
+          <Gauge />
+          تقني
+        </Button>
+      </div>
+      <div className="mt-7 grid gap-x-10 lg:grid-cols-2">
+        {sections.map(([title, simple, detail]) => (
+          <section key={title} className="border-t border-border py-7">
+            <h2 className="font-soft text-2xl font-bold">{title}</h2>
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+              {technical ? detail : simple}
+            </p>
+          </section>
+        ))}
+      </div>
+      <section className="border-t border-border py-7">
+        <h2 className="font-soft text-2xl font-bold">المصادر</h2>
+        <ul className="mt-5 grid gap-3 text-xs leading-relaxed text-muted-foreground sm:grid-cols-2">
+          <li>
+            <a
+              className="underline underline-offset-4 hover:text-primary"
+              href="https://ssd.jpl.nasa.gov/horizons/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              NASA/JPL Horizons
+            </a>
+            {' — '}شمس وأرض من سطح القمر مع API رسمي لـ JPL.
+          </li>
+          <li>
+            <a
+              className="underline underline-offset-4 hover:text-primary"
+              href="https://quickmap.lroc.asu.edu/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              LROC QuickMap (ASU)
+            </a>
+            {' — '}خرائط تفاعلية وصور وتضاريس القطب الجنوبي للتحقق البصري.
+          </li>
+          <li>
+            <a
+              className="underline underline-offset-4 hover:text-primary"
+              href="https://trek.nasa.gov/moon/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              NASA Moon Trek
+            </a>
+            {' — '}استكشاف 3D للقمر مع واجهات API وإمكانية التثبيت مرجعيًا.
+          </li>
+          <li>
+            <a
+              className="underline underline-offset-4 hover:text-primary"
+              href="https://asc-csa.gc.ca/eng/astronomy/moon-exploration"
+              target="_blank"
+              rel="noreferrer"
+            >
+              بوابة استكشاف القمر الكندية (CSA)
+            </a>
+            {' — '}محور رحلات ارتميس وروفر القطب الجنوبي والجليد المائي والمحتوى التعليمي.
+          </li>
+          <li>
+            <a
+              className="underline underline-offset-4 hover:text-primary"
+              href="https://lroc.sese.asu.edu/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              NASA/LRO/LOLA
+            </a>
+            {' — '}شبكة ارتفاعات 40 م للقطب الجنوبي (LDEM_85S_40M V2.0).
+          </li>
+          <li>
+            <a
+              className="underline underline-offset-4 hover:text-primary"
+              href="https://svs.gsfc.nasa.gov/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              NASA SVS / LROC WAC
+            </a>
+            {' — '}نسيج السطح المستخدم للمجسم ثلاثي الأبعاد.
+          </li>
+        </ul>
+      </section>
+      <section className="border-t border-border py-7">
+        <h2 className="font-soft text-2xl font-bold">قاموس المصطلحات</h2>
+        <dl className="mt-5 grid gap-5 sm:grid-cols-2">
+          {[
+            ['السمت', 'الاتجاه بحسب عقارب الساعة من الشمال المحلي، 0–360°.'],
+            ['الارتفاع', 'الزاوية فوق الأفق الهندسي المحلي أو دونه.'],
+            ['DEM', 'نموذج الارتفاع الرقمي: شبكة ارتفاعات السطح.'],
+            ['واط.ساعة', 'طاقة مخزنة أو مستهلكة، وليست قدرة لحظية.'],
+            ['أفق التضاريس', 'أعلى زاوية عائق بالعينات في كل اتجاه.'],
+            ['الفحص', 'مقارنة مبنية على نموذج، وليست موافقة مهمة.'],
+          ].map(([word, definition]) => (
+            <div key={word}>
+              <dt className="font-bold">{word}</dt>
+              <dd className="mt-2 text-xs text-muted-foreground">{definition}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+      <Button asChild>
+        <Link to="/explorer">افتح الملاح</Link>
+      </Button>
+    </PlanningPage>
+  );
 }

@@ -1,5 +1,5 @@
 {
-  "name": "tanstack_start_ts",
+  "name": "synexis",
   "private": true,
   "sideEffects": false,
   "type": "module",
@@ -7,7 +7,7 @@
     "dev": "vite dev",
     "build": "vite build",
     "build:dev": "vite build --mode development",
-    "preview": "vite preview",
+    "preview": "vite build && (cp -f .dev.vars .output/server/.dev.vars 2>/dev/null || true) && node node_modules/wrangler/bin/wrangler.js dev --config .output/server/wrangler.json --port 4173",
     "lint": "eslint .",
     "test": "vitest run src/lib",
     "format": "prettier --write ."
@@ -18,11 +18,7 @@
     "js-yaml": "4.3.2"
   },
   "dependencies": {
-    "@ai-sdk/google": "^4.0.118",
-    "@ai-sdk/openai-compatible": "^3.0.92",
     "@hookform/resolvers": "^5.2.2",
-    "@lovable.dev/ai-gateway": "^0.1.11",
-    "@lovable.dev/cloud-auth-js": "^1.1.2",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-aspect-ratio": "^1.1.8",
@@ -51,13 +47,11 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@react-three/drei": "^10",
     "@react-three/fiber": "^9",
-    "@supabase/supabase-js": "^2.116.0",
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/react-query": "^5.101.1",
     "@tanstack/react-router": "1.170.41",
     "@tanstack/react-start": "1.168.60",
     "@tanstack/router-plugin": "1.168.42",
-    "ai": "^7.0.170",
     "cheerio": "^1.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -78,19 +72,15 @@
     "three": "^0.187.0",
     "tw-animate-css": "^1.3.4",
     "vaul": "^1.1.2",
-    "vite-tsconfig-paths": "^6.0.2",
     "zod": "4.6.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
-    "@lovable.dev/vite-tanstack-config": "2.27.1",
     "@types/node": "^22.16.5",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@types/three": "^0.187.0",
     "@vitejs/plugin-react": "^5.2.0",
-    "drizzle-kit": "0.x",
-    "drizzle-orm": "0.x",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.6",
@@ -98,11 +88,11 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^15.15.0",
     "nitro": "3.0.260603-beta",
-    "postgres": "^4.1.0",
     "prettier": "^3.7.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.0",
+    "wrangler": "4.161.0"
   }
 }

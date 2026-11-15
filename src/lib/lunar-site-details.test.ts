@@ -10,7 +10,14 @@ describe('landing-site details', () => {
   it('never supplies site data without source ephemerides', () => {
     expect(siteDetails(null, 0, 0, 0)).toBeNull();
   });
-  const specs = { frequencyGHz: 2, transmitPowerW: 10, transmitGainDbi: 20, receiveGainDbi: 40, lossesDb: 3, receiverThresholdDbm: -100 };
+  const specs = {
+    frequencyGHz: 2,
+    transmitPowerW: 10,
+    transmitGainDbi: 20,
+    receiveGainDbi: 40,
+    lossesDb: 3,
+    receiverThresholdDbm: -100,
+  };
   it('calculates a reproducible ideal free-space received power from explicit specifications', () => {
     const link = radioLink(384400, 30, specs);
     expect(link?.freeSpaceLossDb).toBeCloseTo(210.1640507, 6);

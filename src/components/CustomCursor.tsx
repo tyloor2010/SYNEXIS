@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
 /** Trailing ink cursor: a solid dot at the pointer plus a soft ring that eases behind it. */
 export function CustomCursor() {
@@ -7,8 +7,8 @@ export function CustomCursor() {
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
-    const fine = window.matchMedia("(pointer: fine)").matches;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const fine = window.matchMedia('(pointer: fine)').matches;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!fine || reduced) return;
     setEnabled(true);
 
@@ -25,17 +25,17 @@ export function CustomCursor() {
       hovering = !!el?.closest("a, button, [role='button'], img");
       if (dotRef.current) {
         dotRef.current.style.transform = `translate3d(${target.x}px, ${target.y}px, 0) translate(-50%, -50%)`;
-        dotRef.current.style.opacity = "1";
+        dotRef.current.style.opacity = '1';
       }
     };
     const onDown = () => (down = true);
     const onUp = () => (down = false);
     const onLeave = () => {
-      if (dotRef.current) dotRef.current.style.opacity = "0";
-      if (ringRef.current) ringRef.current.style.opacity = "0";
+      if (dotRef.current) dotRef.current.style.opacity = '0';
+      if (ringRef.current) ringRef.current.style.opacity = '0';
     };
     const onEnter = () => {
-      if (ringRef.current) ringRef.current.style.opacity = "1";
+      if (ringRef.current) ringRef.current.style.opacity = '1';
     };
 
     const tick = () => {
@@ -49,22 +49,22 @@ export function CustomCursor() {
     };
     raf = requestAnimationFrame(tick);
 
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mousedown", onDown);
-    window.addEventListener("mouseup", onUp);
-    document.addEventListener("mouseleave", onLeave);
-    document.addEventListener("mouseenter", onEnter);
-    const styleEl = document.createElement("style");
-    styleEl.textContent = "*, *::before, *::after { cursor: none !important; }";
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mousedown', onDown);
+    window.addEventListener('mouseup', onUp);
+    document.addEventListener('mouseleave', onLeave);
+    document.addEventListener('mouseenter', onEnter);
+    const styleEl = document.createElement('style');
+    styleEl.textContent = '*, *::before, *::after { cursor: none !important; }';
     document.head.appendChild(styleEl);
 
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mousedown", onDown);
-      window.removeEventListener("mouseup", onUp);
-      document.removeEventListener("mouseleave", onLeave);
-      document.removeEventListener("mouseenter", onEnter);
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mousedown', onDown);
+      window.removeEventListener('mouseup', onUp);
+      document.removeEventListener('mouseleave', onLeave);
+      document.removeEventListener('mouseenter', onEnter);
       styleEl.remove();
     };
   }, []);
@@ -76,7 +76,7 @@ export function CustomCursor() {
       <div
         ref={ringRef}
         className="pointer-events-none fixed top-0 left-0 z-[100] h-9 w-9 rounded-full border border-foreground opacity-0 mix-blend-difference transition-opacity duration-300"
-        style={{ borderColor: "#fff", borderWidth: 2 }}
+        style={{ borderColor: '#fff', borderWidth: 2 }}
       />
       <div
         ref={dotRef}

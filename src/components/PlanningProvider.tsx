@@ -1,7 +1,7 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import type { LunarResult } from "@/lib/lunar-data";
-import { appendScenario } from "@/lib/lunar-planning";
-import { readPlanningStorage, validStoredResult } from "@/lib/planning-storage";
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import type { LunarResult } from '@/lib/lunar-data';
+import { appendScenario } from '@/lib/lunar-planning';
+import { readPlanningStorage, validStoredResult } from '@/lib/planning-storage';
 
 type PlanningState = {
   current: LunarResult | null;
@@ -17,7 +17,7 @@ export function PlanningProvider({ children }: { children: ReactNode }) {
     [hydrated, setHydrated] = useState(false);
   useEffect(() => {
     try {
-      const data = readPlanningStorage(localStorage.getItem("synexis-planning-v1"));
+      const data = readPlanningStorage(localStorage.getItem('synexis-planning-v1'));
       setSaved(data.saved);
       setCurrent(data.current);
     } catch {
@@ -28,7 +28,7 @@ export function PlanningProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (hydrated) {
       try {
-        localStorage.setItem("synexis-planning-v1", JSON.stringify({ saved, current }));
+        localStorage.setItem('synexis-planning-v1', JSON.stringify({ saved, current }));
       } catch {
         /* Keep working in memory if unavailable. */
       }
@@ -52,6 +52,6 @@ export function PlanningProvider({ children }: { children: ReactNode }) {
 }
 export function usePlanning() {
   const value = useContext(PlanningContext);
-  if (!value) throw new Error("Planning provider missing");
+  if (!value) throw new Error('Planning provider missing');
   return value;
 }

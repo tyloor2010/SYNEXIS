@@ -101,15 +101,6 @@ function Team() {
       <p className="mt-8 text-[11px] text-muted-foreground">{TEAM_NOTE}</p>
       <div className="mt-6 flex flex-wrap items-center gap-4 border-t border-border pt-6">
         <Users className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-        <a
-          href="https://github.com/MoiEgy/SYNEXIS"
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-2 text-xs font-bold text-foreground underline underline-offset-4 transition-colors hover:text-primary"
-        >
-          <Github className="h-4 w-4" aria-hidden="true" />
-          المستودع على جيتهاب — MoiEgy/SYNEXIS
-        </a>
         <Link
           to="/learn"
           className="text-xs font-bold text-foreground underline underline-offset-4 hover:text-primary"

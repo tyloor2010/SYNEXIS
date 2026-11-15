@@ -9,21 +9,11 @@ export default defineConfig(({ command }) => ({
   plugins: [
     tailwindcss(),
     tanstackStart({
-      // Use src/server.ts as the SSR entry so security headers and the
+      // Keep the custom SSR entry so security headers and the
       // catastrophic-error fallback apply to every response.
       server: { entry: 'server' },
     }),
-    ...(command === 'build'
-      ? [
-          nitro({
-            preset: 'cloudflare-module',
-            // Pin the compatibility date: Nitro's default ("latest") stamps the
-            // local build date, which Wrangler can reject when it is past UTC midnight.
-            compatibilityDate: '2026-11-14',
-            cloudflare: { nodeCompat: true },
-          }),
-        ]
-      : []),
+    ...(command === 'build' ? [nitro({ preset: 'vercel' })] : []),
     viteReact(),
   ],
 }));

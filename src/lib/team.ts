@@ -50,7 +50,7 @@ export const TEAM_MEMBERS: TeamMember[] = [
     github: '',
     linkedin: '',
     website: '',
-    image: '/team/ahmed-ibrahimd.svg',
+    image: '/team/ahmed-ibrahimd.jpeg',
   },
   {
     id: 'ahmed-mohammed',
@@ -70,7 +70,7 @@ export const TEAM_MEMBERS: TeamMember[] = [
     github: '',
     linkedin: '',
     website: 'https://moonasser.site/',
-    image: '/team/mohammed-nasser.svg',
+    image: '/team/mohammed-nasser.jpeg',
   },
 ];
 

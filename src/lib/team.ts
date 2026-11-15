@@ -75,4 +75,4 @@ export const TEAM_MEMBERS: TeamMember[] = [
 ];
 
 export const TEAM_NOTE =
-  'روابط وحسابات كل عضو قيد الإضافة — عدّل src/lib/team.ts واستبدل الصورة في public/team/.';
+  'روابط وحسابات كل عضو قيد الإضافة — بيانات الفريق قابلة للتعديل، وصور الأعضاء قابلة للاستبدال.';

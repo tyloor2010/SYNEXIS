@@ -527,6 +527,7 @@ export function LunarNavigator() {
               <TerrainPanel
                 grid={grid}
                 error={terrainError}
+                loading={terrainPending}
                 result={result}
                 hour={hour}
                 point={{ latitude: Number(latitude), longitude: Number(longitude) }}

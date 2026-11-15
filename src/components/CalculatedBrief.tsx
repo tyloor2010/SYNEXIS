@@ -77,8 +77,14 @@ export function CalculatedBrief({
   const [answer, setAnswer] = useState<{ text: string; model: string; toolsUsed: number } | null>(
     null,
   );
-  const [analysis, setAnalysis] = useState<{ text: string; model: string } | null>(null);
-  const [analysisLoading, setAnalysisLoading] = useState(false);
+  const [analysis, setAnalysis] = useState<{
+    key: string;
+    text: string;
+    model: string;
+  } | null>(null);
+  const [analysisLoadingKey, setAnalysisLoadingKey] = useState<string | null>(null);
+  const [analysisError, setAnalysisError] = useState<{ key: string; message: string } | null>(null);
+  const autoRun = useRef(0);
 
   const runToolLoop = async (
     initial: SeleneInput,
@@ -122,7 +128,7 @@ export function CalculatedBrief({
 
   // AI analysis is part of the analysis itself, generated automatically
   // after every connected evaluation — not behind a separate button.
-  const analysisKey =
+  const resultKey =
     result.status === 'connected'
       ? [
           result.scenario.name,
@@ -132,17 +138,26 @@ export function CalculatedBrief({
           result.retrievedAt ?? '',
         ].join('|')
       : null;
+  // A new point or a newly computed horizon (spherical -> local) is a new
+  // analysis: an answer from the provisional horizon must never outlive it.
+  const horizonKey = horizon
+    ? `${horizon.elevationM.toFixed(2)}:${horizon.observerHeightM}:${horizon.radiusM.toFixed(0)}`
+    : 'spherical';
+  const analysisKey = resultKey ? `${resultKey}|${horizonKey}` : null;
+  const analysisVisible = analysis && analysis.key === analysisKey ? analysis : null;
+  const analysisLoading = analysisKey !== null && analysisLoadingKey === analysisKey;
+  const analysisErrorVisible =
+    analysisError && analysisError.key === analysisKey ? analysisError.message : null;
   const attemptedKey = useRef<string | null>(null);
   useEffect(() => {
     if (!analysisKey) return;
     if (calculating || (covered && horizon === null)) return; // wait for the local horizon
     if (attemptedKey.current === analysisKey) return;
     attemptedKey.current = analysisKey;
-    let cancelled = false;
-    setAnalysis(null);
-    setAnalysisLoading(true);
+    const runId = ++autoRun.current;
+    setAnalysisLoadingKey(analysisKey);
+    setAnalysisError(null);
     void (async () => {
-      let toolsAdded = 0;
       try {
         const final = await runToolLoop(
           {
@@ -151,21 +166,24 @@ export function CalculatedBrief({
             horizon,
             purpose: 'auto',
           },
-          (added) => {
-            toolsAdded += added;
-          },
+          () => {},
         );
-        if (!cancelled && final?.status === 'connected')
-          setAnalysis({ text: final.answer, model: final.model });
+        // Ignore stale answers: only the latest run may publish, and the
+        // rendered block is filtered by the current key anyway.
+        if (autoRun.current === runId && final?.status === 'connected') {
+          setAnalysis({ key: analysisKey, text: final.answer, model: final.model });
+          setAnalysisError(null);
+        } else if (autoRun.current === runId && final?.status === 'error') {
+          // Rate limits or upstream errors are surfaced quietly; the
+          // deterministic brief remains the reference.
+          setAnalysisError({ key: analysisKey, message: final.message });
+        }
       } catch {
         // Silent: the deterministic brief remains the source of truth.
       } finally {
-        if (!cancelled) setAnalysisLoading(false);
+        if (autoRun.current === runId) setAnalysisLoadingKey(null);
       }
     })();
-    return () => {
-      cancelled = true;
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [analysisKey, calculating, horizon, grid, result]);
 
@@ -224,25 +242,30 @@ export function CalculatedBrief({
         . هذه نتائج فحص أولي محسوبة، وليست شهادة سلامة هبوط أو ضمان اتصال. جدوى الطاقة تحتاج إدخال
         مواصفات معداتك.
       </p>
-      {analysis && (
+      {analysisVisible && (
         <div className="mt-3 border border-primary/30 bg-primary/5 p-3">
           <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-primary">
             <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
             سيلين تقرأ النتيجة · عبر NVIDIA
           </p>
-          <p className="mt-2 text-xs leading-relaxed">{analysis.text}</p>
+          <p className="mt-2 text-xs leading-relaxed">{analysisVisible.text}</p>
           <p className="mt-2 text-[10px] text-muted-foreground">
             مولّدة آليًا بعد التقييم مباشرة · الأرقام من مخرجات الأدوات نفسها · ليست شهادة مهمة.
           </p>
         </div>
       )}
-      {!analysis && analysisLoading && (
+      {!analysisVisible && analysisLoading && (
         <p className="mt-3 flex items-center gap-2 text-[10px] text-muted-foreground">
           <span
             className="inline-block h-2 w-2 animate-pulse rounded-full bg-primary"
             aria-hidden="true"
           />
           سيلين تقرأ النتيجة…
+        </p>
+      )}
+      {!analysisVisible && !analysisLoading && analysisErrorVisible && (
+        <p role="status" className="mt-3 text-[10px] leading-relaxed text-muted-foreground">
+          تعذر توليد التحليل التلقائي: {analysisErrorVisible} — الملخص المحلي أعلاه هو المرجع.
         </p>
       )}
       <p className="mt-2 flex items-center gap-1 text-[10px] text-muted-foreground">

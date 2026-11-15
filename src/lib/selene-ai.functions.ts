@@ -326,15 +326,6 @@ export const askSeleneNvidia = createServerFn({ method: 'POST' })
   .handler(async ({ data }): Promise<SeleneNvidiaAnswer> => {
     const { allowRequest, consumeRateLimit } = await import('./request-guard.server');
 
-    const dayBucket = data.purpose === 'auto' ? 'selene-ai:auto' : 'selene-ai:day';
-    const dayLimit = data.purpose === 'auto' ? 20 : 10;
-    if (
-      !consumeRateLimit('selene-ai:system', 200, 86_400_000) ||
-      !allowRequest(dayBucket, dayLimit, 86_400_000) ||
-      !allowRequest('selene-ai:min', 4, 60_000)
-    )
-      return { status: 'error', message: 'وصلت إلى الحد المسموح من طلبات سيلين الذكية.' };
-
     const isContinuation = Boolean(data.toolCalls && data.toolResults);
     const now = Date.now();
     pruneCache(now);
@@ -342,10 +333,22 @@ export const askSeleneNvidia = createServerFn({ method: 'POST' })
       JSON.stringify({ question: data.question, result: data.result, horizon: data.horizon }),
     );
 
+    // A cached answer costs nothing and must not consume a daily allowance.
     if (!isContinuation) {
       const cached = cache.get(initialKey);
       if (cached && cached.expiresAt > now) return cached.answer;
     }
+
+    // One question costs two upstream calls (initial + tool turn), so the
+    // minute window counts calls while the daily windows count whole user
+    // questions: continuations do not consume the per-IP daily allowance.
+    const dayBucket = data.purpose === 'auto' ? 'selene-ai:auto' : 'selene-ai:day';
+    const dayLimit = data.purpose === 'auto' ? 20 : 10;
+    const withinSystem = consumeRateLimit('selene-ai:system', 200, 86_400_000);
+    const withinMinute = allowRequest('selene-ai:min', 8, 60_000);
+    const withinDay = isContinuation ? true : allowRequest(dayBucket, dayLimit, 86_400_000);
+    if (!withinSystem || !withinMinute || !withinDay)
+      return { status: 'error', message: 'وصلت إلى الحد المسموح من طلبات سيلين الذكية.' };
 
     const key = readBinding('NVIDIA_API_KEY');
     if (!key)

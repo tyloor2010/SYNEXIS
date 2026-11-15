@@ -52,9 +52,6 @@ function Team() {
                 loading="lazy"
               />
               <h2 className="mt-4 font-soft text-xl font-bold">{member.nameAr}</h2>
-              <p className="mt-1 text-xs text-muted-foreground" dir="ltr">
-                {member.name}
-              </p>
               {member.roleAr ? (
                 <p className="mt-3 text-xs font-bold text-foreground">{member.roleAr}</p>
               ) : null}

@@ -24,7 +24,13 @@ export function useSiteHorizon(
     [calculating, setCalculating] = useState(false);
   useEffect(() => {
     setHorizon(null);
-    if (!grid) return;
+    if (!grid) {
+      // Leaving coverage must clear a pending horizon: an in-flight worker is
+      // terminated below and would otherwise leave `calculating` stuck true,
+      // which blocks terrain-gated AI analysis.
+      setCalculating(false);
+      return;
+    }
     setCalculating(true);
     const worker = new Worker(new URL('../lib/terrain-horizon.worker.ts', import.meta.url), {
       type: 'module',
@@ -223,7 +229,7 @@ export function TerrainPanel({
             result={source}
             horizon={horizon}
             grid={grid}
-            calculating={calculating}
+            calculating={calculating || loading}
           />
         </>
       )}
